@@ -7,7 +7,7 @@ O sistema deve ser funcional, bem estruturado e demonstrar suas habilidades téc
 ## 📦 Stack Obrigatória
 - **Backend:** Laravel 12
 - **Frontend:** Vue 3 (Composition API) + Inertia.js + Tailwind CSS
-- **Banco de Dados:** MySQL ou PostgreSQL
+- **Banco de Dados:** MySQL ou SQLite
 
 ## 🔹 Backend (Laravel)
 
