@@ -1,7 +1,7 @@
 # 📋 Desafio Técnico: Desenvolvedor Pleno Full Stack (Laravel/Vue)
 
 ## 🎯 Contexto
-Você deve implementar uma **área de atendimento** que permita gerenciar conversas com contatos através de diferentes canais de comunicação (WhatsApp, Messenger, Email).  
+Você deve implementar uma **área de atendimento** que permita gerenciar conversas com contatos através de diferentes canais de comunicação (WhatsApp, Messenger, Email), de forma simulada (não precisa fazer uma integração real).  
 O sistema deve ser funcional, bem estruturado e demonstrar suas habilidades técnicas.
 
 ## 📦 Stack Obrigatória
@@ -12,7 +12,7 @@ O sistema deve ser funcional, bem estruturado e demonstrar suas habilidades téc
 ## 🔹 Backend (Laravel)
 
 ### Requisitos
-- Criar estrutura para enviar e receber mensagens por diferentes canais (WhatsApp, Messenger, Email)
+- Criar estrutura para enviar e receber mensagens por diferentes canais simulados (Ex: WhatsApp, Messenger, Email)
 - Cada canal deve ter sua própria lógica de envio, mesmo que simulada
 - **Persistir o histórico de mensagens** no banco de dados com relacionamentos apropriados
 - Implementar **delays realistas** nas simulações (1-3 segundos) para parecer envio real
