@@ -22,3 +22,5 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+pipelead-challenge.localhost+4.pem
+pipelead-challenge.localhost+4-key.pem
