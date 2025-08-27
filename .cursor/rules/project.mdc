@@ -6,6 +6,10 @@ alwaysApply: true
 
 # Regras
 
+## O Projeto
+
+- Sistema de Comunicação Multi-Canais que permita gerenciar conversas de contatos em diferentes canais simulados (WhatsApp, Messenger, Email).
+
 - "Sempre aplicar KISS (Keep It Simple, Stupid)."
 - "Priorizar clareza sobre complexidade. Código deve ser legível sem comentários extensos."
 - "Evitar abstrações prematuras. Modularizar apenas quando há repetição real."
