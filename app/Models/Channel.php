@@ -10,6 +10,12 @@ class Channel extends Model
 {
 	use HasFactory;
 
+	protected $guarded = [];
+
+	protected $casts = [
+		'config' => 'array',
+	];
+
 	public function messages(): HasMany
 	{
 		return $this->hasMany(Message::class);

@@ -10,6 +10,12 @@ class Contact extends Model
 {
 	use HasFactory;
 
+	protected $guarded = [];
+
+	protected $casts = [
+		'meta' => 'array',
+	];
+
 	public function messages(): HasMany
 	{
 		return $this->hasMany(Message::class);
