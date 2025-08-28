@@ -1,0 +1,60 @@
+---
+description: Regras do projeto para Pipelead Challenge
+globs: []
+alwaysApply: true
+---
+
+# Regras
+
+## O Projeto
+
+- Sistema de Comunicação Multi-Canais que permita gerenciar conversas de contatos em diferentes canais simulados (WhatsApp, Messenger, Email).
+
+- "Sempre aplicar KISS (Keep It Simple, Stupid)."
+- "Priorizar clareza sobre complexidade. Código deve ser legível sem comentários extensos."
+- "Evitar abstrações prematuras. Modularizar apenas quando há repetição real."
+- "Usar convenções padrão do Laravel, Vue e Tailwind. Não reinventar a roda."
+- "Não implementar features extras além dos requisitos."
+
+## Backend
+
+- "Models, Migrations, Controllers e Jobs separados por responsabilidade."
+- "Cada canal (WhatsApp, Messenger, Email) deve ter sua própria classe em App/Services/Channels/."
+- "Migrations: sempre usar foreignId()->constrained()->cascadeOnDelete()."
+- "Criar índices para contact_id, status, created_at."
+- "Mensagens: estados fixos = sending, sent, failed."
+- "Campo sent_at só deve ser setado após sucesso no envio."
+- "Persistir falhas no campo error."
+- "Envio assíncrono sempre via SendMessageJob."
+- "Jobs: $tries = 3 e backoff = [5,10,30]."
+- "Logar falhas com Log::error."
+- "Comando Artisan messages:generate deve usar factories para criar dados fake."
+- "Testes Pest obrigatórios para criação de mensagens, job de envio e polling."
+
+## Frontend
+
+- "Components em resources/js/Components e páginas em resources/js/Pages."
+- "Naming claro: ContactList.vue, ConversationView.vue, MessageInput.vue."
+- "Usar Tailwind simples, sem over-engineering."
+- "Spinner quando enviando, badge de erro quando falhar."
+- "Agrupar mensagens por data."
+- "Polling otimizado: 2s quando ativo, 10s quando inativo."
+- "Scroll virtual ou paginação de 50 msgs/página."
+- "Indicador de não lidas no ContactList."
+- "Evitar estado global complexo; se necessário, usar Pinia apenas para contatos e conversa aberta."
+- "Testar componentes com Vitest (opcional)."
+
+## Qualidade
+
+- "Commits pequenos e descritivos (feat:, fix:, refactor:)."
+- "Naming consistente: inglês, camelCase no JS, snake_case no DB, PascalCase em classes."
+- "Nunca deixar TODO sem resolver."
+- "Todo código deve rodar sem warnings/erros no Laravel, Vue e PHPUnit/Pest."
+- "Rodar Laravel Pint para PHP e ESLint + Prettier para Vue/JS."
+
+## Proibido
+
+- "Não usar APIs reais de WhatsApp, Messenger ou Email."
+- "Não adicionar autenticação."
+- "Não usar pacotes externos de chat prontos."
+- "Não criar abstrações genéricas demais (YAGNI)."
