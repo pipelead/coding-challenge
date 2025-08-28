@@ -1,110 +1,162 @@
-# 📋 Desafio Técnico: Desenvolvedor Pleno Full Stack (Laravel/Vue)
+# Sistema de Comunicação Multi‑Canais (Laravel 12 + Vue 3 + Inertia)
 
-## 🎯 Contexto
-Você deve implementar uma **área de atendimento** que permita gerenciar conversas com contatos através de diferentes canais de comunicação (WhatsApp, Messenger, Email), de forma simulada (não precisa fazer uma integração real).  
-O sistema deve ser funcional, bem estruturado e demonstrar suas habilidades técnicas.
+## Visão Geral
 
-## 📦 Stack Obrigatória
-- **Backend:** Laravel 12
-- **Frontend:** Vue 3 (Composition API) + Inertia.js + Tailwind CSS
-- **Banco de Dados:** MySQL ou SQLite
+Aplicação de atendimento com conversas de contatos em canais simulados (WhatsApp, Messenger, Email). Sem integrações reais: envio simulado com persistência, jobs assíncronos, polling otimizado e virtualização do histórico.
 
-## 🔹 Backend (Laravel)
+## Stack
 
-### Requisitos
-- Criar estrutura para enviar e receber mensagens por diferentes canais simulados (Ex: WhatsApp, Messenger, Email)
-- Cada canal deve ter sua própria lógica de envio, mesmo que simulada
-- **Persistir o histórico de mensagens** no banco de dados com relacionamentos apropriados
-- Implementar **delays realistas** nas simulações (1-3 segundos) para parecer envio real
-- Adicionar **tratamento de erros e logs** para falhas de envio
-- Criar comando Artisan `messages:generate` que gera mensagens fake automaticamente
-- Não é necessário criar endpoints REST, usaremos **Inertia** para integração
-
-## 🔹 Frontend (Vue 3 + Inertia + Tailwind)
-
-### Layout
-Interface com duas colunas principais:
-- **Lateral esquerda:** 
-  - Lista de contatos com nome e preview da última mensagem
-  - Indicador de mensagens não lidas
-  
-- **Área principal (direita):**
-  - Histórico de conversas com **paginação ou scroll virtual** para performance
-  - Agrupamento de mensagens por data
-  - **Feedback visual** de status (enviando, enviado, erro)
-  - Timestamps nas mensagens
-
-### Funcionalidades
-- Caixa de envio com seletor de canal (WhatsApp, Messenger, Email)
-- **Indicadores visuais** durante o envio (loading spinner, desabilitar botão)
-- **Feedback de erro** em caso de falha
-- **Polling otimizado** com Inertia para novas mensagens
-
-Para o design, você pode usar **Tailwind** e se apoiar em ferramentas como [v0](https://v0.dev) ou [Lovable](https://lovable.dev). A estética não será avaliada, mas a funcionalidade sim.
-
-## 📋 Funcionalidades Obrigatórias
-
-1. ✅ Listar contatos com preview da última mensagem
-2. ✅ Exibir histórico completo de mensagens do contato selecionado
-3. ✅ Enviar mensagens escolhendo o canal
-4. ✅ Persistir todas as mensagens no banco
-5. ✅ Atualizar conversas via polling
-6. ✅ Tratamento visual de estados (enviando, erro, sucesso)
-7. ✅ Paginação ou virtualização do histórico
-
-## 🎯 Critérios de Avaliação
-
-- **Estruturação do código** no backend (organização, clareza, separação de responsabilidades)
-- **Solução para múltiplos canais** (extensibilidade, manutenibilidade)
-- **Qualidade da interface** em Vue (componentização, reatividade)
-- **Performance** (paginação, eager loading, queries otimizadas)
-- **Tratamento de erros** e experiência do usuário
-- **Clareza dos commits** (usar Conventional Commits)
-- **Documentação** para executar o projeto
-
-## 💡 Diferenciais (Não obrigatórios)
-
-### Backend
-- Arquitetura modular
-- Testes automatizados com Pest PHP
-- Migrations e seeders bem estruturados
-- Jobs para processamento assíncrono
-
-### Frontend
-- Gerenciamento de estado com **Pinia**
-- Componentes Vue reutilizáveis
-- Modo dark/light
-- Animações e transições suaves
-- Acessibilidade (ARIA labels, navegação por teclado)
-
-## 📝 Instruções de Entrega
-
-1. Faça um **fork** deste repositório
-2. Desenvolva em uma branch com seu nome
-3. Faça commits frequentes e descritivos
-4. Ao finalizar, abra um **Pull Request**
-5. Inclua no PR qualquer observação sobre decisões tomadas
-
-## 📚 README do Projeto
-
-Seu projeto deve incluir um README com:
-- Instruções de instalação e configuração
-- Como rodar migrations e seeders
-- Como executar o comando de geração de mensagens
-- Como rodar os testes (se implementados)
-- Decisões técnicas e trade-offs
-- Possíveis melhorias futuras
-
-## 📌 Observações Importantes
-
-- **Não integre com APIs reais** - todas as integrações devem ser simuladas
-- **Não implemente autenticação** - assuma usuário já logado
-- **Foque na qualidade** em vez da quantidade de features
-
-## ❓ Dúvidas
-
-Entre em contato através do email fornecido ou abra uma issue neste repositório.
+- Backend: Laravel 12 (PHP 8.2+)
+- Frontend: Vue 3 (Composition API) + Inertia.js + Tailwind CSS
+- Banco: SQLite (padrão) ou MySQL
+- Fila: database queue
+- Testes: Pest
 
 ---
 
-Boa sorte! 🚀
+## 1) Instalação
+
+Requisitos: PHP 8.2+, Composer, Node 18+, npm.
+
+```bash
+composer install
+npm install
+cp .env.example .env
+php artisan key:generate
+```
+
+Banco SQLite (padrão):
+
+```bash
+# criar arquivo do banco
+mkdir -p database && touch database/database.sqlite
+
+# .env (exemplos relevantes)
+DB_CONNECTION=sqlite
+QUEUE_CONNECTION=database
+APP_ENV=local
+```
+
+Frontend (dev server) ou build:
+
+```bash
+npm run dev
+# ou build de produção
+npm run build
+```
+
+---
+
+### 2) Migrações e Seeders
+
+Criar tabelas e semear canais padrão:
+
+```bash
+php artisan migrate
+php artisan db:seed
+```
+
+Isso executa o `ChannelSeeder` e cria os canais: whatsapp, messenger e email.
+
+---
+
+## 3) Geração de Mensagens Fake
+
+Comando Artisan para popular contatos e mensagens (opcionalmente enfileirar envios "out"):
+
+```bash
+php artisan messages:generate {contacts=10} {per=20} {--dispatch}
+
+# exemplo: 10 contatos, 30 mensagens cada, com disparo de jobs para as "out"
+php artisan messages:generate 10 30 --dispatch
+```
+
+---
+
+## 4) Fila/Jobs (envio simulado)
+
+- Configure `QUEUE_CONNECTION=database` no `.env`.
+- Inicie o worker para processar envios:
+
+```bash
+php artisan queue:work
+```
+
+- Job: `App/Jobs/SendMessageJob` com tentativas (`$tries = 3`) e backoff `[5,10,30]`.
+- Serviços de canal em `App/Services/Channels/*Sender` simulam delay (1–3s), registram logs e podem lançar erro para simular falhas.
+
+---
+
+## 5) Executando o Projeto
+
+Servidor Laravel:
+
+```bash
+php artisan serve
+```
+
+Acessos principais:
+
+- `GET /` lista contatos (sidebar com preview e não lidas)
+- `GET /conversations/{contact}` mostra histórico com:
+- Virtualização/paginação do histórico
+- Agrupamento por data
+- Status visual (enviando/sent/failed)
+- Timestamps por mensagem
+- `POST /messages` envia mensagem (cria com `status=sending` e dispara `SendMessageJob`)
+- Polling otimizado para novas mensagens (parcial via Inertia)
+- Endpoint provisório de falhas: `GET /admin/messages/failed`
+
+---
+
+## 6) Testes (Pest)
+
+Executar testes:
+
+```bash
+./vendor/bin/pest
+```
+
+Cobertura básica:
+
+- Criação de mensagem persiste no banco
+- `SendMessageJob` marca como `sent` em sucesso
+- Polling (`/conversations/{contact}/messages/updates`) retorna apenas novas mensagens após `last_id`
+
+---
+
+## 7) Arquitetura e Decisões Técnicas
+
+- KISS/YAGNI: foco em clareza, sem abstrações prematuras.
+- Inertia ao invés de REST explícito.
+- Serviços de canal via interface `ChannelSenderInterface` (WhatsApp, Messenger, Email) em `App/Services/Channels/`.
+- Envio assíncrono isolado no job; `SenderResolver` para resolver sender por `channel.slug` (facilita testes e DI).
+- Frontend: Vue 3 + Inertia, Tailwind simples, componentes:
+    - `ContactList.vue`, `ConversationView.vue` (virtualizado, agrupamento por data, status e timestamps), `MessageInput.vue` (select de canal, textarea, spinner/disabled).
+- Polling incremental: consulta endpoint de updates por `last_id` e aplica Inertia partial reload (`only: ['messages']`).
+- Banco: índices em `messages(contact_id, created_at)` e `messages(status)`; eager loading seletivo.
+- Cache leve (10s) para lista de contatos.
+- Pinia apenas para estado mínimo (contatos, conversa ativa, mensagens).
+
+---
+
+## 8) Possíveis Melhorias Futuras
+
+- Dark mode (Tailwind class strategy) e toasts para erros.
+- Auto‑scroll mais inteligente (não pular enquanto o usuário lê histórico).
+- SSE/WebSockets (Laravel Reverb/Echo) para near‑realtime.
+- Observabilidade (Sentry/Scout) e tela/admin para falhas.
+- Paginação com cursor e otimizações adicionais.
+- Acessibilidade (ARIA, teclado) mais ampla.
+
+---
+
+### Estrutura (referência rápida)
+
+- Migrations/Models: `contacts`, `channels`, `messages` com relações adequadas.
+- Services: `App/Services/Channels/*Sender` + `SenderResolver`.
+- Job: `App/Jobs/SendMessageJob`.
+- Controllers: `ConversationController`, `MessageController`, `ContactController`.
+- Rotas: `routes/web.php` (Inertia pages + polling + admin failed).
+- Frontend: `resources/js/pages/Conversations/*` e `resources/js/Components/*`.
+- Command: `messages:generate`.
