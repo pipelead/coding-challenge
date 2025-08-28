@@ -1,6 +1,6 @@
 <template>
 	<div class="flex flex-col h-full">
-		<div class="flex-1 overflow-y-auto" ref="scrollEl" @scroll="onScroll">
+		<div class="flex-1 overflow-y-auto scroll-smooth" ref="scrollEl" @scroll="onScroll">
 			<DynamicScroller :items="virtualItems" :min-item-size="40" key-field="key" class="p-4">
 				<template #default="{ item, index }">
 					<DynamicScrollerItem :item="item" :active="true" :data-index="index">
@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted, nextTick, watch } from 'vue'
 import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller'
 
 const props = defineProps<{
@@ -56,7 +56,7 @@ function time(s: string): string {
 }
 
 const virtualItems = computed(() => {
-	const items = props.messages?.data ?? []
+	const items = [...(props.messages?.data ?? [])].reverse()
 	const out: Array<
 		{ type: 'date'; key: string; date: string } |
 		{ type: 'msg'; key: string; align: 'start' | 'end'; data: any }
@@ -83,6 +83,24 @@ function onScroll() {
 		})
 	}
 }
+
+function scrollToBottom() {
+	nextTick(() => {
+		const el = scrollEl.value
+		if (!el) return
+		el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+	})
+}
+
+onMounted(() => {
+	setTimeout(() => {
+		scrollToBottom()
+	}, 100)
+})
+
+watch(virtualItems, () => {
+	scrollToBottom()
+})
 </script>
 
 <style>
