@@ -12,7 +12,7 @@ class ConversationController extends Controller
 	public function index(Request $request)
 	{
 		$contacts = Contact::query()
-			->with(['messages' => fn ($q) => $q->latest()->limit(1)])
+			->with(['messages' => fn ($q) => $q->select('id', 'contact_id', 'body', 'created_at')->latest()->limit(1)])
 			->withCount(['messages as unread_count' => function ($q) {
 				$q->where('direction', 'in')->where('status', 'sent');
 			}])
@@ -27,6 +27,15 @@ class ConversationController extends Controller
 
 	public function show(Contact $contact, Request $request)
 	{
+		$contacts = Contact::query()
+			->with(['messages' => fn ($q) => $q->select('id', 'contact_id', 'body', 'created_at')->latest()->limit(1)])
+			->withCount(['messages as unread_count' => function ($q) {
+				$q->where('direction', 'in')->where('status', 'sent');
+			}])
+			->orderBy('name')
+			->paginate(20)
+			->withQueryString();
+
 		$messages = Message::query()
 			->with('channel')
 			->where('contact_id', $contact->id)
@@ -37,6 +46,7 @@ class ConversationController extends Controller
 		return Inertia::render('Conversations/Show', [
 			'contact' => $contact,
 			'messages' => $messages,
+			'contacts' => $contacts,
 		]);
 	}
 }
