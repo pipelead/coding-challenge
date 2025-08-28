@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { router } from '@inertiajs/vue3'
-import { onMounted } from 'vue'
+import { onMounted, watch } from 'vue'
 // @ts-expect-error - shim .vue
 import ContactList from '../../Components/ContactList.vue'
 import ConversationView from '../../Components/ConversationView.vue'
@@ -30,13 +30,17 @@ const props = defineProps<{ contact: any; messages: any; contacts: any }>()
 const store = useConversationsStore()
 
 function loadMore() {
-	if (!props.messages.prev_page_url) return
-	router.visit(props.messages.prev_page_url, { preserveScroll: true, preserveState: true, only: ['messages'] })
+	if (!props.messages.next_page_url) return
+	router.visit(props.messages.next_page_url, { preserveScroll: true, preserveState: true, only: ['messages'] })
 }
 
 onMounted(() => {
 	store.setContacts(props.contacts)
 	store.setActiveContact(props.contact.id)
 	store.setMessages(props.messages)
+})
+
+watch(() => props.messages, (val) => {
+	store.setMessages(val)
 })
 </script>
