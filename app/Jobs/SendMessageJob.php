@@ -4,9 +4,7 @@ namespace App\Jobs;
 
 use App\Models\Message;
 use App\Services\Channels\ChannelSenderInterface;
-use App\Services\Channels\EmailSender;
-use App\Services\Channels\MessengerSender;
-use App\Services\Channels\WhatsAppSender;
+use App\Services\Channels\SenderResolver;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -39,7 +37,7 @@ class SendMessageJob implements ShouldQueue
 	{
 	}
 
-	public function handle(): void
+	public function handle(SenderResolver $resolver): void
 	{
 		$message = Message::query()
 			->with('channel')
@@ -60,11 +58,12 @@ class SendMessageJob implements ShouldQueue
 			return;
 		}
 
-		$sender = $this->resolveSender($message);
+		$slug = (string) ($message->channel->slug ?? '');
+		$sender = $resolver->resolveBySlug($slug);
 
 		Log::info('SendMessageJob: start', [
 			'message_id' => $message->id,
-			'channel' => $message->channel->slug ?? null,
+			'channel' => $slug,
 			'attempt' => $this->attempts(),
 		]);
 
@@ -98,7 +97,7 @@ class SendMessageJob implements ShouldQueue
 			// Apenas marca como failed no último retry
 			if ($finalAttempt) {
 				$message->update([
-					'status' => 'failed',
+					' status' => 'failed',
 					'error' => $e->getMessage(),
 				]);
 			} else {
@@ -111,17 +110,5 @@ class SendMessageJob implements ShouldQueue
 			// Propaga para retry/backoff funcionar
 			throw $e;
 		}
-	}
-
-	private function resolveSender(Message $message): ChannelSenderInterface
-	{
-		$slug = (string) ($message->channel->slug ?? '');
-
-		return match ($slug) {
-			'whatsapp' => new WhatsAppSender(),
-			'messenger' => new MessengerSender(),
-			'email' => new EmailSender(),
-			default => throw new Exception('Unsupported channel slug: ' . $slug),
-		};
 	}
 }
