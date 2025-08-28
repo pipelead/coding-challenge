@@ -10,8 +10,17 @@
 </template>
 
 <script setup lang="ts">
-// @ts-expect-error - shim de .vue cobre o tipo
+// @ts-expect-error - shim .vue
 import ContactList from '@/Components/ContactList.vue'
+import { onMounted } from 'vue'
+import { useConversationsStore } from '@/stores/conversations'
 
-defineProps<{ contacts: any }>()
+const props = defineProps<{ contacts: any }>()
+
+const store = useConversationsStore()
+
+onMounted(() => {
+	store.setContacts(props.contacts)
+	store.setActiveContact(null)
+})
 </script>

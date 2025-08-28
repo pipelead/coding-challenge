@@ -6,7 +6,10 @@
 					<DynamicScrollerItem :item="item" :active="true" :data-index="index">
 						<div v-if="item.type === 'date'" class="text-center text-xs text-gray-500 my-2">{{ item.date }}</div>
 						<div v-else class="max-w-[70%] rounded-lg px-3 py-2 text-sm" :class="item.data.direction === 'out' ? 'self-end bg-indigo-600 text-white' : 'self-start bg-gray-100 text-gray-900'">
-							<div class="whitespace-pre-wrap break-words">{{ item.data.body }}</div>
+							<div class="flex items-center gap-2">
+								<span v-if="item.data.channel?.name" class="text-[10px] px-1.5 py-0.5 rounded bg-black/10 text-black/70">{{ item.data.channel.name }}</span>
+								<div class="whitespace-pre-wrap break-words">{{ item.data.body }}</div>
+							</div>
 							<div class="mt-1 text-[10px] opacity-70 flex items-center gap-2">
 								<span>{{ time(item.data.created_at) }}</span>
 								<span v-if="item.data.direction === 'out'">
@@ -68,12 +71,7 @@ function onScroll() {
 	const el = scrollEl.value
 	if (!el) return
 	if (el.scrollTop === 0) {
-		// topo: solicitar mais antigas
-		// evita tempestade de eventos usando setTimeout microtask
 		queueMicrotask(() => {
-			// emite evento de loadMore para o pai
-			// pai faz router.visit(prev_page_url)
-			// e mantém preserveState/Scroll
 			// @ts-ignore - emit implícito
 			$emit('loadMore')
 		})
