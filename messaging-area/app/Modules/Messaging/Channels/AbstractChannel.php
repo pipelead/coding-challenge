@@ -4,6 +4,7 @@ namespace App\Modules\Messaging\Channels;
 
 use App\Modules\Messaging\Concerns\ChannelInterface;
 use App\Modules\Messaging\Enums\MessageStatusEnum;
+use App\Modules\Messaging\Jobs\ProcessMessageSendingJob;
 use App\Modules\Messaging\Models\Message;
 use Exception;
 use Illuminate\Support\Facades\Log;
@@ -14,6 +15,8 @@ abstract class AbstractChannel implements ChannelInterface
     {
         $this->logEvent($message, 'queued', ['queued_at' => now()]);
 
+        ProcessMessageSendingJob::dispatch($message, $this)
+            ->delay(now()->addSeconds($this->getSimulationDelay()));
     }
 
     protected function logEvent(Message $message, string $event, array $context = [], ?string $error = null): void
