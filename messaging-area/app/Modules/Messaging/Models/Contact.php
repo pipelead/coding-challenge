@@ -2,6 +2,7 @@
 
 namespace App\Modules\Messaging\Models;
 
+use Database\Factories\ContactFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -22,4 +23,9 @@ class Contact extends Model
         'phone',
         'avatar_path',
     ];
+
+    protected static function newFactory(): ContactFactory
+    {
+        return ContactFactory::new();
+    }
 }

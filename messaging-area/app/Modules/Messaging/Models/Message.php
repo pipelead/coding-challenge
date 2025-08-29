@@ -2,6 +2,7 @@
 
 namespace App\Modules\Messaging\Models;
 
+use Database\Factories\MessageFactory;
 use App\Modules\Messaging\Enums\{MessageDirectionEnum, MessageStatusEnum};
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -40,6 +41,11 @@ class Message extends Model
         'direction' => MessageDirectionEnum::class,
         'status' => MessageStatusEnum::class
     ];
+
+    protected static function newFactory(): MessageFactory
+    {
+        return MessageFactory::new();
+    }
 
     public function conversation(): BelongsTo
     {

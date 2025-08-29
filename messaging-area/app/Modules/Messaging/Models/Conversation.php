@@ -4,6 +4,7 @@ namespace App\Modules\Messaging\Models;
 
 use App\Modules\Messaging\Enums\{ConversationChannelEnum, MessageDirectionEnum};
 use Carbon\Carbon;
+use Database\Factories\ConversationFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany, HasOne};
@@ -36,6 +37,11 @@ class Conversation extends Model
         'channel' => ConversationChannelEnum::class,
         'has_unread_messages' => 'boolean',
     ];
+
+    protected static function newFactory(): ConversationFactory
+    {
+        return ConversationFactory::new();
+    }
 
     public function contact(): BelongsTo
     {
