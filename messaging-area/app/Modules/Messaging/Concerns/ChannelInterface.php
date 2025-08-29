@@ -8,6 +8,5 @@ interface ChannelInterface
 {
     public function getName(): string;
     public function getSimulationDelay(): int;
-    public function supportsReadReceipts(): bool;
     public function sendMessage(Message $message): void;
 }
