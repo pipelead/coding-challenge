@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\HandleInertiaRequests;
 use App\Modules\Messaging\Commands\GenerateMessagesCommand;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\{Exceptions, Middleware};
@@ -14,7 +15,9 @@ return Application::configure(basePath: dirname(__DIR__))
         GenerateMessagesCommand::class
     ])
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->web(append: [
+            HandleInertiaRequests::class
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
