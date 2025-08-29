@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+    app:
+        build:
+            context: .
+            dockerfile: docker/Dockerfile
+        image: massage-dashboard-test
+        container_name: massage-dashboard-test
+        restart: unless-stopped
+        working_dir: /var/www
+        volumes:
+            - ./:/var/www
+        networks:
+            - app-network
+        depends_on:
+            mysql:
+                condition: service_healthy
+            redis:
+                condition: service_started
+
+    nginx:
+        image: nginx:alpine
+        container_name: massage-dashboard-test-nginx
+        restart: unless-stopped
+        ports:
+            - "80:80"
+        volumes:
+            - ./:/var/www
+            - ./docker/nginx:/etc/nginx/conf.d
+        networks:
+            - app-network
+        depends_on:
+            - app
+
+    mysql:
+        image: mysql:8.0
+        container_name: massage-dashboard-test-mysql
+        restart: unless-stopped
+        environment:
+            MYSQL_DATABASE: messages_dashboard
+            MYSQL_ROOT_PASSWORD: password
+            MYSQL_USER: laravel
+            MYSQL_PASSWORD: password
+        volumes:
+            - mysql:/var/lib/mysql
+        ports:
+            - "3306:3306"
+        networks:
+            - app-network
+        command: --default-authentication-plugin=mysql_native_password
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ppassword"]
+            timeout: 20s
+            retries: 10
+
+    redis:
+        image: redis:alpine
+        container_name: massage-dashboard-test-redis
+        restart: unless-stopped
+        ports:
+            - "6379:6379"
+        volumes:
+            - redis:/data
+        networks:
+            - app-network
+
+networks:
+    app-network:
+        driver: bridge
+
+volumes:
+    mysql:
+        driver: local
+    redis:
+        driver: local
