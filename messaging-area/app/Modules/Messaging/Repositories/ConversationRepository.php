@@ -6,7 +6,6 @@ use App\Modules\Messaging\Enums\MessageDirectionEnum;
 use App\Modules\Messaging\Enums\MessageStatusEnum;
 use App\Modules\Messaging\Models\Conversation;
 use App\Modules\Messaging\Models\Message;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -18,7 +17,7 @@ class ConversationRepository
         return Conversation::where('channel', $channel)
             ->with([
                 'contact:id,name,email,phone,avatar_path',
-                'messages' => function (Builder $query) {
+                'messages' => function ($query) {
                     $query->latest(column: 'created_at')->limit(value: 1);
                 },
             ])
