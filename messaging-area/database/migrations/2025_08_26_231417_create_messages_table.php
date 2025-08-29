@@ -10,7 +10,17 @@ return new class extends Migration
     {
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('conversation_id')->constrained()->onDelete('cascade');
+            $table->foreignId('reply_to_message_id')->nullable()->constrained('messages')->onDelete('set null');
+            $table->enum('direction', ['inbound', 'outbound']);
+            $table->text('content')->nullable();
+            $table->string('subject', 255)->nullable();
+            $table->enum('status', ['pending', 'sent', 'delivered', 'read', 'failed'])->default('pending');
+            $table->text('error_message')->nullable();
             $table->timestamps();
+
+            $table->index(['conversation_id', 'created_at']);
+            $table->index(['conversation_id', 'id']);
         });
     }
 
