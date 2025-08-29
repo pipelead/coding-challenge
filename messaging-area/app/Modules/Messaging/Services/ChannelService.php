@@ -7,6 +7,7 @@ use App\Modules\Messaging\Concerns\ChannelInterface;
 use App\Modules\Messaging\Models\Message;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
+use InvalidArgumentException;
 
 class ChannelService
 {
